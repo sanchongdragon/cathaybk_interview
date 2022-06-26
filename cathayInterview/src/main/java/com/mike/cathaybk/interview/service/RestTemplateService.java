@@ -4,14 +4,20 @@ import java.beans.PropertyDescriptor;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,8 +31,11 @@ import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mike.cathaybk.interview.Util.Utils;
 import com.mike.cathaybk.interview.apiconfig.RestTemplateConfig;
+import com.mike.cathaybk.interview.entity.Ccy;
+import com.mike.cathaybk.interview.exception.NotFoundException;
 import com.mike.cathaybk.interview.model.CcyVo;
 import com.mike.cathaybk.interview.model.CoinDeskModel;
+import com.mike.cathaybk.interview.repository.CcyRepository;
 
 import ch.qos.logback.core.joran.util.beans.BeanUtil;
 
@@ -39,8 +48,8 @@ public class RestTemplateService {
 	@Autowired
 	private RestTemplate restTemplate;
 	
-	public String get(String url) {
-		
+	public String getAPIdata(String url) {
+
 		String response = this.restTemplate.getForObject(url, String.class);
 		JSONObject jsonObj = JSONObject.parseObject(response);
 		CoinDeskModel model = this.parseContentToModel(jsonObj);
@@ -75,7 +84,7 @@ public class RestTemplateService {
 			Map<String, String> timeMap = new HashMap<>();
 			JSONObject jObj = (JSONObject) value; 
 			jObj.forEach((timeK, timeV) -> {
-				System.out.println(jObj.getTimestamp(timeK));
+//				System.out.println(jObj.getTimestamp(timeK));
 				timeMap.put(timeK, timeV.toString());
 			});
 			model.setTime(timeMap);
@@ -103,18 +112,25 @@ public class RestTemplateService {
 	}
 	
 	public static void main(String[] argu) {
-//		k: updateduk/ v: Jun 25, 2022 at 09:44 BST
-//		k: updatedISO/ v: 2022-06-25T08:44:00+00:00
-//		k: updated/ v: Jun 25, 2022 08:44:00 UTC
-		String updatedISO = "2022-06-25T08:44:00+00:00";
-		String updateduk = "Jun 25, 2022 at 09:44 BST";
-		String updated = "Jun 25, 2022 08:44:00 UTC";
-		DateTimeFormatter formater = DateTimeFormatter.BASIC_ISO_DATE;
+//		k: updateduk/ v: Jun 26, 2022 at 07:36 BST
+//		k: updatedISO/ v: 2022-06-26T06:36:00+00:00
+//		k: updated/ v: Jun 26, 2022 06:36:00 UTC
+		String updatedISO = "2022-06-26T06:36:00+00:00";
+		String updateduk = "Jun 26, 2022 at 07:36 BST";
+		String updated = "Jun 26, 2022 06:36:00 UTC";
+		
+		final DateTimeFormatter formaterISO = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
+		final DateTimeFormatter formatterUTC = DateTimeFormatter.ofPattern("MMM dd, yyyy HH:mm:ss z", Locale.US);
+		final DateTimeFormatter formatterDUK = DateTimeFormatter.ofPattern("MMM dd, yyyy 'at' HH:mm z", Locale.US);
+		final DateTimeFormatter endFormater = DateTimeFormatter.ofPattern("yyyy/MM/dd hh:mm:ss");
 
-		LocalDateTime dateTime = LocalDateTime.parse(updated, formater);
-		System.out.println(dateTime);
-//		DateTimeFormatter.ofPattern("yyyy/MM/dd hh:mm:ss")
-//		System.out.println(formater.parse(updatedISO));
-//		Timestamp ts = new Timestamp();
+		LocalDateTime dateTimeISO = LocalDateTime.parse(updatedISO, formaterISO);
+		System.out.println("ISO: "+dateTimeISO.format(endFormater));
+		LocalDateTime dateTimeUTC = LocalDateTime.parse(updated, formatterUTC);
+		System.out.println("UTC: "+dateTimeUTC.format(endFormater));
+		LocalDateTime dateTimeDUK = LocalDateTime.parse(updateduk, formatterDUK);
+		System.out.println("DUK: "+dateTimeDUK.format(endFormater));
+
+	
 	}
 }
