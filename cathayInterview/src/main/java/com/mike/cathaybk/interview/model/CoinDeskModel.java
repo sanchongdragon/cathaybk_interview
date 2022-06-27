@@ -8,7 +8,7 @@ public class CoinDeskModel {
 	private Map<String, String> time;
 	private String disclaimer;
 	private String chartName;
-	private Map<String, CcyVo> bpi;
+	private Map<String, CcyDetails> bpi;
 	public Map<String, String> getTime() {
 		return time;
 	}
@@ -27,10 +27,10 @@ public class CoinDeskModel {
 	public void setChartName(String chartName) {
 		this.chartName = chartName;
 	}
-	public Map<String, CcyVo> getBpi() {
+	public Map<String, CcyDetails> getBpi() {
 		return bpi;
 	}
-	public void setBpi(Map<String, CcyVo> bpi) {
+	public void setBpi(Map<String, CcyDetails> bpi) {
 		this.bpi = bpi;
 	}
 

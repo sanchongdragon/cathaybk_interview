@@ -40,21 +40,19 @@ class CcyControllerTest {
 	
 	@Test
 	void getCcyInfoTest() throws Exception {
-	    Ccy ccyInfo = new Ccy("TWD", "台幣", new BigDecimal(10.12345), Timestamp.valueOf("2022-06-26 00:00:00"));
+	    Ccy ccyInfo = new Ccy("TWD", "台幣");
 	    ccyService.insertCcyInfo(ccyInfo);
 	    when(ccyService.getCcyInfo(ccyInfo.getCode())).thenReturn(ccyInfo);
 		mockMvc.perform(get("/api/ccy/{code}", ccyInfo.getCode()).accept(MediaType.APPLICATION_JSON_VALUE))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.code").value(ccyInfo.getCode()))
 				.andExpect(jsonPath("$.cnName").value(ccyInfo.getCnName()))
-				.andExpect(jsonPath("$.rate").value(ccyInfo.getRate()))
-				.andExpect(jsonPath("$.updateTime").value(ccyInfo.getUpdateTime().toLocalDateTime()))
 				.andDo(print());
 	}
 	
 	@Test
 	void insertCcyInfoTest() throws Exception {
-	    Ccy ccyInfo = new Ccy("USD", "美金", new BigDecimal(12.32145), Timestamp.valueOf(LocalDateTime.now()));
+	    Ccy ccyInfo = new Ccy("USD", "美金");
 		mockMvc.perform(post("/api/ccy").contentType(MediaType.APPLICATION_JSON_VALUE)
 				.content(JSONObject.toJSONString(ccyInfo)))
 				.andExpect(status().isCreated())
@@ -63,23 +61,24 @@ class CcyControllerTest {
 
 	@Test
 	void replaceCcyInfoTest() throws Exception {
-	    Ccy oldCcyInfo = new Ccy("USD", "美金", new BigDecimal(12.32145), Timestamp.valueOf("2022-06-26 00:00:00"));
-	    Ccy newCcyInfo = new Ccy("USD", "台幣", new BigDecimal(10.11111), Timestamp.valueOf("2022-06-26 21:00:00"));
+	    Ccy oldCcyInfo = new Ccy("USD", "美金");
+	    Ccy newCcyInfo = new Ccy("USD", "台幣");
 	    ccyService.insertCcyInfo(oldCcyInfo);
 	    when(ccyService.replaceCcyInfo(oldCcyInfo.getCode(), newCcyInfo)).thenReturn(newCcyInfo);
-		mockMvc.perform(put("/api/ccy/{code}", newCcyInfo.getCode()).contentType(MediaType.APPLICATION_JSON_VALUE)
+//	    System.out.println(JSONObject.toJSONString(newCcyInfo));
+		mockMvc.perform(put("/api/ccy/{code}", newCcyInfo.getCode())
+				.accept(MediaType.APPLICATION_JSON_VALUE)
+				.contentType(MediaType.APPLICATION_JSON_VALUE)
 				.content(JSONObject.toJSONString(newCcyInfo)))
 				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.code").value(oldCcyInfo.getCode()))
+				.andExpect(jsonPath("$.code").value(newCcyInfo.getCode()))
 				.andExpect(jsonPath("$.cnName").value(newCcyInfo.getCnName()))
-				.andExpect(jsonPath("$.rate").value(newCcyInfo.getRate()))
-				.andExpect(jsonPath("$.updateTime").value(newCcyInfo.getUpdateTime().toLocalDateTime()))
 				.andDo(print());
 	}
 
 	@Test
 	void deleteCcyInfoTest() throws Exception {
-	    Ccy ccyInfo = new Ccy("GBP", "英鎊", new BigDecimal(22.22222), Timestamp.valueOf(LocalDateTime.now()));
+	    Ccy ccyInfo = new Ccy("GBP", "英鎊");
 	    ccyService.insertCcyInfo(ccyInfo);
 	    
 		mockMvc.perform(delete("/api/ccy/{code}", ccyInfo.getCode()))

@@ -37,8 +37,6 @@ public class CcyService {
 		Ccy ccy = new Ccy();
 		ccy.setCode(ccyInfo.getCode());
 		ccy.setCnName(ccyInfo.getCnName());
-		ccy.setRate(ccyInfo.getRate());
-		ccy.setUpdateTime(ccyInfo.getUpdateTime());
 
 		ccyRepository.save(ccy);
 	}
@@ -50,8 +48,6 @@ public class CcyService {
 		Ccy newCcyInfo = new Ccy();
 		newCcyInfo.setCode(oldCcyInfo.getCode());
 		newCcyInfo.setCnName(request.getCnName());
-		newCcyInfo.setRate(request.getRate());
-		newCcyInfo.setUpdateTime(request.getUpdateTime());
 		
 		return ccyRepository.save(newCcyInfo);
 	}

@@ -2,7 +2,7 @@ package com.mike.cathaybk.interview.model;
 
 import java.math.BigDecimal;
 
-public class CcyVo {
+public class CcyDetails {
 	private String symbol;
 	private String code;
 	private String description; 

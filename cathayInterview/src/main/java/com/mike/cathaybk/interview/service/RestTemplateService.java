@@ -33,7 +33,7 @@ import com.mike.cathaybk.interview.Util.Utils;
 import com.mike.cathaybk.interview.apiconfig.RestTemplateConfig;
 import com.mike.cathaybk.interview.entity.Ccy;
 import com.mike.cathaybk.interview.exception.NotFoundException;
-import com.mike.cathaybk.interview.model.CcyVo;
+import com.mike.cathaybk.interview.model.CcyDetails;
 import com.mike.cathaybk.interview.model.CoinDeskModel;
 import com.mike.cathaybk.interview.repository.CcyRepository;
 
@@ -41,75 +41,31 @@ import ch.qos.logback.core.joran.util.beans.BeanUtil;
 
 @Service
 public class RestTemplateService {
-
-	private static final int READ_TIMEOUT = 5000;
-	private static final int CONNECT_TIMEOUT = 2000;
 	
 	@Autowired
 	private RestTemplate restTemplate;
 	
 	public String getAPIdata(String url) {
-
-		String response = this.restTemplate.getForObject(url, String.class);
-		JSONObject jsonObj = JSONObject.parseObject(response);
-		CoinDeskModel model = this.parseContentToModel(jsonObj);
-
-		Map<String, String> map = model.getTime();
-		map.forEach((timeK, timeV) -> {
-			System.out.println("k: "+timeK + "/ v: "+timeV);
-		});
-		
-		Map<String, CcyVo> bpimap = model.getBpi();
-		
-		bpimap.forEach((ccy, details) -> {
-			System.out.println("ccy : " + ccy);
-			System.out.println(details.showContent());
-		});
 		
 		return this.restTemplate.getForObject(url, String.class);
-	}
-	
-	private CoinDeskModel parseContentToModel(JSONObject jsonObj) {
-		CoinDeskModel model = new CoinDeskModel();
+//		JSONObject jsonObj = JSONObject.parseObject(response);
+//		CoinDeskModel model = this.parseContentToModel(jsonObj);
+//
+//		Map<String, String> map = model.getTime();
+//		map.forEach((timeK, timeV) -> {
+//			System.out.println("k: "+timeK + "/ v: "+timeV);
+//		});
+//		
+//		Map<String, CcyVo> bpimap = model.getBpi();
+//		
+//		bpimap.forEach((ccy, details) -> {
+//			System.out.println("ccy : " + ccy);
+//			System.out.println(details.showContent());
+//		});
 		
-		jsonObj.forEach((k, v) -> {
-			System.out.println(String.format("key: %s, Value: %s", k, v));
-			putValueInModel(model, k, v);
-		});
-		return model;
+//		 response;
 	}
 	
-	private void putValueInModel(CoinDeskModel model, String key, Object value) {
-		if(key.equals("time")) {
-			Map<String, String> timeMap = new HashMap<>();
-			JSONObject jObj = (JSONObject) value; 
-			jObj.forEach((timeK, timeV) -> {
-//				System.out.println(jObj.getTimestamp(timeK));
-				timeMap.put(timeK, timeV.toString());
-			});
-			model.setTime(timeMap);
-		} else if(key.equals("disclaimer"))
-			model.setDisclaimer(String.valueOf(value));
-		else if(key.equals("chartName"))
-			model.setChartName(String.valueOf(value));
-		else if(key.equals("bpi")) {
-			Map<String, CcyVo> ccyMap = new HashMap<>();
-			JSONObject jObj = (JSONObject) value; 
-			jObj.forEach((ccy, details) -> {
-				JSONObject detailsObj = (JSONObject) details; // 直接取出details, 轉成jsonObject				
-				CcyVo vo = new CcyVo();
-				vo.setCode(detailsObj.getString("code"));
-				vo.setDescription(detailsObj.getString("description"));
-				vo.setRate(Utils.chgBigDecimal(detailsObj.getString("rate").replace(",", "")));
-				vo.setRateFloat(Utils.chgBigDecimal(detailsObj.getString("rate_float").replace(",","")));
-				vo.setSymbol(detailsObj.getString("symbol"));
-
-				ccyMap.put(ccy, vo);
-			});
-			
-			model.setBpi(ccyMap);
-		}
-	}
 	
 	public static void main(String[] argu) {
 //		k: updateduk/ v: Jun 26, 2022 at 07:36 BST

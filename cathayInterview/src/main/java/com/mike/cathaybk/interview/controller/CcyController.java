@@ -25,11 +25,6 @@ import com.mike.cathaybk.interview.service.RestTemplateService;
 @RestController
 @RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CcyController {
-
-	private final String url = "https://api.coindesk.com/v1/bpi/currentprice.json";
-	
-//	@Autowired
-//	private RestTemplateService restTemplateService;
 	
 	@Autowired
 	private CcyService ccyService;
