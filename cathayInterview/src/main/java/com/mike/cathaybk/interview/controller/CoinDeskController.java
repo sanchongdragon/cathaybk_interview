@@ -33,11 +33,13 @@ public class CoinDeskController {
 	}
 	
 	@GetMapping(path = "/updateTime")
-	public ResponseEntity<String> getUpdateTime() {
+	public ResponseEntity<JSONObject> getUpdateTime() {
 		String apiReturnData = coinDeskService.getAPIdata(url);
 		JSONObject jsonObj = JSON.parseObject(apiReturnData);
 		CoinDeskModel model = coinDeskService.parseContentToModel(jsonObj);
-		return ResponseEntity.ok().body(model.getTime().get("updated"));
+		JSONObject resp = new JSONObject();
+		resp.put("updateTime", model.getTime().get("updated"));
+		return ResponseEntity.ok().body(resp);
 	}
 	
 	@GetMapping(path = "/ccyDetails")
@@ -45,7 +47,8 @@ public class CoinDeskController {
 		String apiReturnData = coinDeskService.getAPIdata(url);
 		JSONObject jsonObj = JSON.parseObject(apiReturnData);
 		CoinDeskModel model = coinDeskService.parseContentToModel(jsonObj);
-		return ResponseEntity.ok().body(coinDeskService.getCcyDetails(model));
+		List<CcyViewObject> ccyVo = coinDeskService.getCcyDetails(model);
+		return ResponseEntity.ok().body(ccyVo);
 	}
 
 }

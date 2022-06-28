@@ -1,6 +1,5 @@
 package com.mike.cathaybk.interview.service;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -10,7 +9,9 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import com.alibaba.fastjson.JSONObject;
 import com.mike.cathaybk.interview.Util.Utils;
@@ -23,14 +24,23 @@ public class CoinDeskService {
 	
 	@Autowired
 	private CcyService ccyService;
-	
 	@Autowired
-	private RestTemplateService restTimeplateService;
-
+	private RestTemplate restTemplate;
+	
+	/**
+	 * 透過 restTemplate call api
+	 * @param url
+	 * @return 回傳json string
+	 * */
 	public String getAPIdata(String url) {
-		return restTimeplateService.getAPIdata(url);
+		return restTemplate.getForObject(url, String.class);
 	}
 	
+	/**
+	 * 轉換response json object成自己定義的物件
+	 * @param jsonObj response json object
+	 * @return 轉換後的物件
+	 * */
 	public CoinDeskModel parseContentToModel(JSONObject jsonObj) {
 		CoinDeskModel model = new CoinDeskModel();
 		
@@ -40,6 +50,11 @@ public class CoinDeskService {
 		return model;
 	}
 	
+	/**
+	 * 取出物件裡面的幣別代號, 用代號查詢DB的幣別中文名稱
+	 * @param coinDeskModel 轉換後的物件
+	 * @return 包含所有幣別代號、中文、匯率的List
+	 * */
 	public List<CcyViewObject> getCcyDetails(CoinDeskModel coinDeskModel) {
 		List<CcyViewObject> ccyVoList = new ArrayList<>();
 		Map<String, CcyDetails> bpiMap = coinDeskModel.getBpi();
@@ -54,6 +69,9 @@ public class CoinDeskService {
 		return ccyVoList;
 	}
 	
+	/**
+	 * 把response轉成model
+	 * */
 	private void putValueInModel(CoinDeskModel model, String key, Object value) {
 		if(key.equals("time")) {
 			Map<String, String> timeMap = new HashMap<>();
@@ -86,6 +104,12 @@ public class CoinDeskService {
 		}
 	}
 
+	/**
+	 * 按照不同格式去format日期
+	 * @param needTransKey 判斷是哪種格式
+	 * @param needTransTime 要被format的日期
+	 * @return 最後輸出特定格式的日期 "yyyy/MM/dd HH:mm:ss"
+	 * */
 	private String transTime(String needTransKey, String needTransTime) {
 		final DateTimeFormatter formaterISO = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
 		final DateTimeFormatter formatterUTC = DateTimeFormatter.ofPattern("MMM dd, yyyy HH:mm:ss z", Locale.US);
