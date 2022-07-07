@@ -26,7 +26,10 @@ public class CoinDeskController {
 	
 	@GetMapping(path = "/callapi")
 	public ResponseEntity<CoinDeskModel> getApiData() {
+		System.out.println("test getApiData url: " + url);
 		String apiReturnData = coinDeskService.getAPIdata(url);
+		System.out.println("test apiReturnData: " + apiReturnData);
+
 		JSONObject jsonObj = JSON.parseObject(apiReturnData);
 		CoinDeskModel model = coinDeskService.parseContentToModel(jsonObj);
 		return ResponseEntity.ok().body(model);
@@ -35,6 +38,7 @@ public class CoinDeskController {
 	@GetMapping(path = "/updateTime")
 	public ResponseEntity<JSONObject> getUpdateTime() {
 		String apiReturnData = coinDeskService.getAPIdata(url);
+
 		JSONObject jsonObj = JSON.parseObject(apiReturnData);
 		CoinDeskModel model = coinDeskService.parseContentToModel(jsonObj);
 		JSONObject resp = new JSONObject();

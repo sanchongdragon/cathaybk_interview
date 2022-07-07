@@ -31,14 +31,14 @@ public class CcyService {
 		return allCcyInfo;
 	}
 
-	public void insertCcyInfo(Ccy ccyInfo) {
+	public Ccy insertCcyInfo(Ccy ccyInfo) {
 		System.out.printf("insertCcyInfo method %n");
 		
 		Ccy ccy = new Ccy();
 		ccy.setCode(ccyInfo.getCode());
 		ccy.setCnName(ccyInfo.getCnName());
 
-		ccyRepository.save(ccy);
+		return ccyRepository.save(ccy);
 	}
 	
 	public Ccy replaceCcyInfo(String code, Ccy request) {
@@ -54,8 +54,8 @@ public class CcyService {
 
 	public void deleteCcyInfo(String code) {
 		System.out.printf("deleteCcyInfo method ccy code : %s %n", code);
-		ccyRepository.deleteByCode(code);
+		Optional<Ccy> entity = ccyRepository.findByCodeIgnoreCase(code);
+		ccyRepository.delete(entity.orElseThrow(() -> new NotFoundException("can not findByCode")));
 	}
-
 	
 }

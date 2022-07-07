@@ -33,6 +33,7 @@ public class CoinDeskService {
 	 * @return 回傳json string
 	 * */
 	public String getAPIdata(String url) {
+		System.out.println("getAPIdata url :"+url);
 		return restTemplate.getForObject(url, String.class);
 	}
 	
@@ -112,8 +113,8 @@ public class CoinDeskService {
 	 * */
 	private String transTime(String needTransKey, String needTransTime) {
 		final DateTimeFormatter formaterISO = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
-		final DateTimeFormatter formatterUTC = DateTimeFormatter.ofPattern("MMM dd, yyyy HH:mm:ss z", Locale.US);
-		final DateTimeFormatter formatterDUK = DateTimeFormatter.ofPattern("MMM dd, yyyy 'at' HH:mm z", Locale.US);
+		final DateTimeFormatter formatterUTC = DateTimeFormatter.ofPattern("MMM d, yyyy HH:mm:ss z", Locale.US);
+		final DateTimeFormatter formatterDUK = DateTimeFormatter.ofPattern("MMM d, yyyy 'at' HH:mm z", Locale.US);
 		final DateTimeFormatter endFormater = DateTimeFormatter.ofPattern("yyyy/MM/dd hh:mm:ss");
 
 		if(needTransKey.equals("updated")) {
